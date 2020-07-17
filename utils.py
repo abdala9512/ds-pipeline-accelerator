@@ -1,6 +1,8 @@
 """Submission related functions"""
 
 
+import pickle
+
 
 class Submission:
 
@@ -22,3 +24,17 @@ class Submission:
     
     self.template[self.predictor] = predictions
     self.template.to_csv("submissions/" + model_name + "_prediction.csv", index = False)
+
+
+class SaveModel:
+
+
+    def __init__(self):
+        pass
+
+
+    def save_model(self, model, model_name):
+
+        with open('data/'  + model_name + '.pkl') as file:
+            pickle.dump(model, file)
+        
