@@ -1,40 +1,73 @@
 """Submission related functions"""
 
-
 import pickle
-
+import joblib
+import os
 
 class Submission:
+    """Class to create Kaggle submission
+    """
+    def __init__(self, submission_template, predictor, model_name):
+        """init class of submission
 
-    def __init__(self, submission_template, predictor):
+        Args:
+            submission_template (array-like): Array of predictions
+            predictor (array-like): Temporal array to save predictions
+            model_name (string): string with model name
+        """
         self.template = submission_template
         self.predictor = predictor
-        pass
+        self.model_name = model_name
 
+    def create_submission(self, predictions, save = 'submission'):
+        """method to create submission
 
-    def create_submission(self, predictions, model_name):
-    """Create a csv to Kaggle submission
-
-    Args:
-        predictions ([type]): Array of predictions
-        model_name ([type]): Model name in the csv file
-        model_submission (pandas.DataFrame): submission template
-        predictor_name ([type]): predictor name in the submission fiel
-    """
-    
-    self.template[self.predictor] = predictions
-    self.template.to_csv("submissions/" + model_name + "_prediction.csv", index = False)
+        Args:
+            predictions (array-like): array of predictions
+            save (str, optional): save in current working directory or sumission file. Defaults to 'submission'.
+        """
+        self.template[self.predictor] = predictions
+        if save == 'submission':
+            self.template.to_csv("submissions/" + self.model_name + "_prediction.csv", index = False)
+        else:
+            self.template.to_csv(os.path.dirname(__file__) + self.model_name)
 
 
 class SaveModel:
+    """class to save model
+    """
+    def __init__(self, model, model_name):
+        """init method
 
+        Args:
+            model (Object): Machine Learning model to save
+            model_name (String): string to name model.
+        """
+        self.model = model
+        self.model_name = model_name
 
-    def __init__(self):
-        pass
+    def save_model(self):
+        """method who save model
+        """
+        with open('data/'  + self.model_name + '.pkl') as file:
+            pickle.dump(self.model, file)
 
+class LoadModel:
+    """Class to load model
+    """
+    def __init__(self, model_name):
+        """init method
 
-    def save_model(self, model, model_name):
+        Args:
+            model_name (string): string name to load model. Needed '.pkl' or binary file.
+        """
+        self.model_name = model_name
 
-        with open('data/'  + model_name + '.pkl') as file:
-            pickle.dump(model, file)
-        
+    def load_model(self):
+        """methos to load models
+
+        Returns:
+            Object-model: Machine Learning Model.
+        """
+        model_load = joblib.load(os.path.dirname(__file__) + self.model_name)
+        return model_load
